@@ -1,0 +1,45 @@
+@url = http://localhost:3000/api
+
+### Login (ejecutar este primero)
+# @name login
+POST {{url}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@mail.com", "password": "123456" }
+
+### Crear
+# @name vehiculo
+POST {{url}}/vehiculos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{ "marca": "Mercedes", "modelo": "Sprinter", "patente": "AB{{$randomInt 100 999}}CD", "anio": 2021, "capacidad_carga": 1500 }
+
+### Listar
+GET {{url}}/vehiculos
+Authorization: Bearer {{login.response.body.token}}
+
+### Modificar (usa el id del vehículo recién creado)
+PUT {{url}}/vehiculos/{{vehiculo.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{ "marca": "Mercedes", "modelo": "Sprinter", "patente": "AB999ZZ", "anio": 2022, "capacidad_carga": 1500 }
+
+### Error 400 (datos inválidos)
+POST {{url}}/vehiculos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{ "marca": "", "modelo": "", "patente": "", "anio": 1800 }
+
+### Error 401 (sin token)
+GET {{url}}/vehiculos
+
+### Error 404
+GET {{url}}/vehiculos/9999
+Authorization: Bearer {{login.response.body.token}}
+
+### Eliminar (va al final)
+DELETE {{url}}/vehiculos/{{vehiculo.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
